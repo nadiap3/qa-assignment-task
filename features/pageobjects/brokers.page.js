@@ -3,6 +3,13 @@ import Page from "./page.js";
 
 class BrokersPage extends Page {
   // Selectors
+  get loadMoreBtn() {
+    return $("a[data-container='load-more-brokers']");
+  }
+
+  get allBrokerNames() {
+    return $$(".broker-card .broker-data > .header-group .name > a");
+  }
   get inputUsername() {
     return $("#username");
   }
@@ -18,6 +25,10 @@ class BrokersPage extends Page {
   // Methods
   open() {
     return super.open("broker");
+  }
+
+  async loadMoreBrokers() {
+    await this.loadMoreBtn.click();
   }
 }
 
