@@ -1,5 +1,6 @@
 import { $ } from "@wdio/globals";
 import Page from "./page.js";
+import { waitforInvisible } from "../helpers/utils.js";
 
 class BrokersPage extends Page {
   // Selectors
@@ -10,16 +11,15 @@ class BrokersPage extends Page {
   get allBrokerNames() {
     return $$(".broker-card .broker-data > .header-group .name > a");
   }
-  get inputUsername() {
-    return $("#username");
+
+  get searchInputField() {
+    return $(
+      "div[data-container='filter-broker-section'] input[data-container='broker-keyword']"
+    );
   }
 
-  get inputPassword() {
-    return $("#password");
-  }
-
-  get btnSubmit() {
-    return $('button[type="submit"]');
+  get loadingIndicator() {
+    return $(".brokers-loading");
   }
 
   // Methods
@@ -29,6 +29,12 @@ class BrokersPage extends Page {
 
   async loadMoreBrokers() {
     await this.loadMoreBtn.click();
+    await waitforInvisible(this.loadingIndicator);
+  }
+
+  async searchForBroker(brokerName) {
+    await this.searchInputField.setValue(brokerName);
+    await waitforInvisible(this.loadingIndicator);
   }
 }
 
