@@ -1,23 +1,19 @@
-import { Given, When, Then } from '@wdio/cucumber-framework';
-import { expect, $ } from '@wdio/globals'
+import { Given, When, Then } from "@wdio/cucumber-framework";
 
-import LoginPage from '../pageobjects/login.page.js';
-import SecurePage from '../pageobjects/secure.page.js';
+import BrokersPage from "../pageobjects/brokers.page.js";
 
 const pages = {
-    login: LoginPage
-}
+  broker: BrokersPage,
+};
 
 Given(/^I am on the (\w+) page$/, async (page) => {
-    await pages[page].open()
+  await pages[page].open();
 });
 
-When(/^I login with (\w+) and (.+)$/, async (username, password) => {
-    await LoginPage.login(username, password)
+When(/^I search for every individual broker details$/, () => {
+  console.log("When step");
 });
 
-Then(/^I should see a flash message saying (.*)$/, async (message) => {
-    await expect(SecurePage.flashAlert).toBeExisting();
-    await expect(SecurePage.flashAlert).toHaveTextContaining(message);
+Then(/^I should see their full info displayed$/, () => {
+  console.log("then step");
 });
-
