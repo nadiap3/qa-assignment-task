@@ -22,6 +22,20 @@ class BrokersPage extends Page {
     return $(".brokers-loading");
   }
 
+  get brokerAddress() {
+    return $(".broker-data .office");
+  }
+
+  get brokerNumOfProperties() {
+    return $(".broker-data .position > a");
+  }
+
+  get brokerLandlinePhone() {
+    return $$(".broker-data .tel-group .tel")[0];
+  }
+  get brokerMobilePhone() {
+    return $$(".broker-data .tel-group .tel")[1];
+  }
   // Methods
   open() {
     return super.open("broker");
@@ -35,6 +49,17 @@ class BrokersPage extends Page {
   async searchForBroker(brokerName) {
     await this.searchInputField.setValue(brokerName);
     await waitforInvisible(this.loadingIndicator);
+  }
+
+  async getBrokerDetails() {
+    const brokerDetails = {
+      name: await this.allBrokerNames[0].getText(),
+      address: await this.brokerAddress.getText(),
+      numOfProperties: await this.brokerNumOfProperties.getText(),
+      landlinePhone: await this.brokerLandlinePhone.getText(),
+      mobilePhone: await this.brokerMobilePhone.getText(),
+    };
+    return brokerDetails;
   }
 }
 

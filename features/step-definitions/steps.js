@@ -1,5 +1,4 @@
 import { Given, When, Then } from "@wdio/cucumber-framework";
-import { waitforInvisible } from "../helpers/utils.js";
 
 import BrokersPage from "../pageobjects/brokers.page.js";
 
@@ -12,21 +11,47 @@ Given(/^I am on the (\w+) page$/, async (page) => {
 });
 
 When(/^I search for every individual broker details$/, async () => {
-  const allBrokers = await BrokersPage.allBrokerNames;
-  console.log("Before========: ", allBrokers.length);
   await BrokersPage.loadMoreBrokers();
-
-  const allBrokersAfter = await BrokersPage.allBrokerNames;
-  console.log("After =========: ", allBrokersAfter.length);
-
-  const allBrokerNames = await allBrokersAfter.map((el) => el.getText());
-  console.log("allBrokerNames: ", allBrokerNames);
-
-  await BrokersPage.searchForBroker(allBrokerNames[0]);
-
-  console.log("Loading indicator disapeared...");
 });
 
-Then(/^I should see their full info displayed$/, () => {
-  console.log("then step");
+Then(/^I should see their full info displayed$/, async () => {
+  const allBrokers = await BrokersPage.allBrokerNames;
+  const allBrokerNames = await allBrokers.map((el) => el.getText());
+
+  const allBrokerWithDetails = [];
+
+  for (const brokerName of allBrokerNames) {
+    await BrokersPage.searchForBroker(brokerName);
+    // await BrokersPage.verifyOnlySearchedBrokerDisplayed(brokerName);
+
+    const brokerDetails = await BrokersPage.getBrokerDetails();
+    allBrokerWithDetails.push(brokerDetails);
+  }
+
+  const errorList = [];
+  allBrokerWithDetails.forEach((broker) => {
+    // Simulate a missing field
+    // if (Math.random() > 0.5) {
+    //   broker.address = "";
+    // }
+
+    // Iterate through the properties of the broker details
+    for (const key in broker) {
+      if (!broker[key]) {
+        // If a field is missing, add the broker details to the error list
+        errorList.push(broker);
+        break;
+      }
+    }
+  });
+
+  // If the error list is not empty, throw an error and print the list
+  if (errorList.length > 0) {
+    errorList.forEach((broker) => {
+      console.error(
+        `Error: One or more fields are missing in broker: ${broker.name}`
+      );
+    });
+    throw new Error("Data is missing for one or more brokers");
+  }
 });
