@@ -30,12 +30,10 @@ class BrokersPage extends Page {
     return $(".broker-data .position > a");
   }
 
-  get brokerLandlinePhone() {
-    return $$(".broker-data .tel-group .tel")[0];
+  get brokerPhoneNumbers() {
+    return $$(".broker-data .tel-group .tel");
   }
-  get brokerMobilePhone() {
-    return $$(".broker-data .tel-group .tel")[1];
-  }
+
   // Methods
   open() {
     return super.open("broker");
@@ -43,21 +41,24 @@ class BrokersPage extends Page {
 
   async loadMoreBrokers() {
     await this.loadMoreBtn.click();
+    await this.loadingIndicator.waitForDisplayed();
     await waitforInvisible(this.loadingIndicator);
   }
 
   async searchForBroker(brokerName) {
     await this.searchInputField.setValue(brokerName);
+    await this.loadingIndicator.waitForDisplayed();
     await waitforInvisible(this.loadingIndicator);
   }
 
   async getBrokerDetails() {
+    const [landlinePhone, mobilePhone] = await this.brokerPhoneNumbers;
     const brokerDetails = {
       name: await this.allBrokerNames[0].getText(),
       address: await this.brokerAddress.getText(),
       numOfProperties: await this.brokerNumOfProperties.getText(),
-      landlinePhone: await this.brokerLandlinePhone.getText(),
-      mobilePhone: await this.brokerMobilePhone.getText(),
+      landlinePhone: landlinePhone ? landlinePhone.getText() : undefined,
+      mobilePhone: mobilePhone ? mobilePhone.getText() : undefined,
     };
     return brokerDetails;
   }

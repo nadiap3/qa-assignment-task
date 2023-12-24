@@ -1,4 +1,5 @@
 import { Given, When, Then } from "@wdio/cucumber-framework";
+import allureReporter from "@wdio/allure-reporter";
 
 import BrokersPage from "../pageobjects/brokers.page.js";
 
@@ -22,19 +23,13 @@ Then(/^I should see their full info displayed$/, async () => {
 
   for (const brokerName of allBrokerNames) {
     await BrokersPage.searchForBroker(brokerName);
-    // await BrokersPage.verifyOnlySearchedBrokerDisplayed(brokerName);
 
     const brokerDetails = await BrokersPage.getBrokerDetails();
-    allBrokerWithDetails.push(brokerDetails);
+    await allBrokerWithDetails.push(brokerDetails);
   }
 
   const errorList = [];
-  allBrokerWithDetails.forEach((broker) => {
-    // Simulate a missing field
-    // if (Math.random() > 0.5) {
-    //   broker.address = "";
-    // }
-
+  await allBrokerWithDetails.forEach((broker) => {
     // Iterate through the properties of the broker details
     for (const key in broker) {
       if (!broker[key]) {
@@ -48,10 +43,16 @@ Then(/^I should see their full info displayed$/, async () => {
   // If the error list is not empty, throw an error and print the list
   if (errorList.length > 0) {
     errorList.forEach((broker) => {
-      console.error(
-        `Error: One or more fields are missing in broker: ${broker.name}`
+      console.error(`Error: Fields are missing for broker: ${broker.name}`);
+      allureReporter.addStep(
+        `Error: Fields are missing for broker: ${broker.name}`
       );
     });
-    throw new Error("Data is missing for one or more brokers");
+    throw new Error(
+      "Data is missing for the following brokers: ",
+      errorList.map((broker) => broker.name)
+    );
   }
+
+  await expect(errorList.length).toBe(0);
 });
