@@ -7,11 +7,11 @@ const pages = {
   broker: BrokersPage,
 };
 
-Given(/^I am on the (\w+) page$/, async (page) => {
+Given(/^I navigate to the (\w+) page$/, async (page) => {
   await pages[page].open();
 });
 
-When(/^I search for every individual broker details$/, async () => {
+When(/^I load all brokers details$/, async () => {
   await BrokersPage.loadMoreBrokers();
 });
 
@@ -30,7 +30,6 @@ Then(/^I should see their full info displayed$/, async () => {
 
   const errorList = [];
   await allBrokerWithDetails.forEach((broker) => {
-    // Iterate through the properties of the broker details
     for (const key in broker) {
       if (!broker[key]) {
         // If a field is missing, add the broker details to the error list
@@ -40,9 +39,9 @@ Then(/^I should see their full info displayed$/, async () => {
     }
   });
 
-  // If the error list is not empty, throw an error and print the list
   if (errorList.length > 0) {
     errorList.forEach((broker) => {
+      // Print error message for each broker
       console.error(`Error: Fields are missing for broker: ${broker.name}`);
       allureReporter.addStep(
         `Error: Fields are missing for broker: ${broker.name}`

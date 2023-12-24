@@ -1,7 +1,7 @@
-Feature: Yavlena brokers website
+Feature: Verify Broker Information on Search
 
-  Scenario Outline: As a user, I can see the full info for all brokers
+  Scenario: Verify broker details on search result view
 
-    Given I am on the broker page
-    When I search for every individual broker details
+    Given I navigate to the broker page
+    When I load all brokers details
     Then I should see their full info displayed
